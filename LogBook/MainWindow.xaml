@@ -9,7 +9,7 @@
     <Grid Background="#EEE8AA">
         <TabControl x:Name="tabControl" HorizontalAlignment="Left" Height="443" Margin="10,76,0,0" VerticalAlignment="Top" Width="786">
             <TabItem Header="Demographics">
-                <Grid Background="#FFFACD">
+                <Grid Background="#FFFACD" Margin="0,6,0,-6">
                     <Label x:Name="DemoTitle" Content="Demographics" HorizontalAlignment="Left" Margin="270,19,0,0" VerticalAlignment="Top" FontSize="22"/>
                     <Label x:Name="barnName" Content="Barn Name" HorizontalAlignment="Left" Margin="51,104,0,0" VerticalAlignment="Top" Height="28" Width="81"/>
                     <Label x:Name="regName" Content="Reg Name" HorizontalAlignment="Left" Margin="51,137,0,0" VerticalAlignment="Top" Height="28" Width="81"/>
@@ -20,9 +20,9 @@
                     <Label x:Name="colour" Content="Colour" HorizontalAlignment="Left" Margin="252,104,0,0" VerticalAlignment="Top" Height="28" Width="65"/>
                     <Label x:Name="markings" Content="Markings" HorizontalAlignment="Left" Margin="252,137,0,0" VerticalAlignment="Top" Height="28" Width="65"/>
                     <Label x:Name="brand" Content="Brand" HorizontalAlignment="Left" Margin="252,165,0,0" VerticalAlignment="Top" Height="28" Width="65"/>
-                    <Label x:Name="miscLabelOne" Content="miscLabelOne" HorizontalAlignment="Left" Margin="252,193,0,0" VerticalAlignment="Top" Height="28" Width="65"/>
-                    <Label x:Name="miscLabelTwo" Content="miscLabelTwo" HorizontalAlignment="Left" Margin="252,221,0,0" VerticalAlignment="Top" Height="28" Width="65"/>
-                    <Label x:Name="miscLabelThree" Content="miscLabelThree" HorizontalAlignment="Left" Margin="252,249,0,0" VerticalAlignment="Top" Height="28" Width="65"/>
+                    <Label x:Name="miscLabelOne" Content="miscLabelOne" Visibility="Hidden" HorizontalAlignment="Left" Margin="252,193,0,0" VerticalAlignment="Top" Height="28" Width="65"/>
+                    <Label x:Name="miscLabelTwo" Content="miscLabelTwo" Visibility="Hidden" HorizontalAlignment="Left" Margin="252,221,0,0" VerticalAlignment="Top" Height="28" Width="65"/>
+                    <Label x:Name="miscLabelThree" Content="miscLabelThree" Visibility="Hidden" HorizontalAlignment="Left" Margin="252,249,0,0" VerticalAlignment="Top" Height="28" Width="65"/>
                     <Label x:Name="barnNameEntry" Content="___________" HorizontalAlignment="Left" Margin="150,104,0,0" VerticalAlignment="Top" Height="28" Width="97"/>
                     <Label x:Name="regNameEntry" Content="___________" HorizontalAlignment="Left" Margin="150,137,0,0" VerticalAlignment="Top" Height="28" Width="97"/>
                     <Label x:Name="regNumEntry" Content="___________" HorizontalAlignment="Left" Margin="150,165,0,0" VerticalAlignment="Top" Height="28" Width="97"/>
@@ -32,19 +32,95 @@
                     <Label x:Name="colourEntry" Content="___________" HorizontalAlignment="Left" Margin="322,104,0,0" VerticalAlignment="Top" Height="28" Width="122"/>
                     <Label x:Name="markingsEntry" Content="___________" HorizontalAlignment="Left" Margin="322,137,0,0" VerticalAlignment="Top" Height="28" Width="122"/>
                     <Label x:Name="brandEntry" Content="___________" HorizontalAlignment="Left" Margin="322,165,0,0" VerticalAlignment="Top" Height="28" Width="122"/>
-                    <Label x:Name="miscLabelOneEntry" Content="___________" HorizontalAlignment="Left" Margin="322,193,0,0" VerticalAlignment="Top" Height="28" Width="122"/>
-                    <Label x:Name="miscLabelTwoEntry" Content="___________" HorizontalAlignment="Left" Margin="322,221,0,0" VerticalAlignment="Top" Height="28" Width="122"/>
-                    <Label x:Name="miscLabelThreeEntry" Content="___________" HorizontalAlignment="Left" Margin="322,249,0,0" VerticalAlignment="Top" Height="28" Width="122"/>
+                    <Label x:Name="miscLabelOneEntry" Content="___________" Visibility="Hidden" HorizontalAlignment="Left" Margin="322,193,0,0" VerticalAlignment="Top" Height="28" Width="122"/>
+                    <Label x:Name="miscLabelTwoEntry" Content="___________" Visibility="Hidden" HorizontalAlignment="Left" Margin="322,221,0,0" VerticalAlignment="Top" Height="28" Width="122"/>
+                    <Label x:Name="miscLabelThreeEntry" Content="___________" Visibility="Hidden" HorizontalAlignment="Left" Margin="322,249,0,0" VerticalAlignment="Top" Height="28" Width="122"/>
                     <Image x:Name="demoPicture" HorizontalAlignment="Left" Height="188" Margin="449,82,0,0" VerticalAlignment="Top" Width="301" Source="C:\Users\kimbe\Documents\Visual Studio 2015\Projects\Intro App\LogBook\LogBook\Properties\placeholder.jpg" RenderTransformOrigin="0.522,0.489"/>
-                    <Button x:Name="editDemo" Content="Edit" HorizontalAlignment="Left" Margin="166,320,0,0" VerticalAlignment="Top" Width="75"/>
-                    <Button x:Name="loadDemoPic" Content="Upload" HorizontalAlignment="Left" Margin="558,275,0,0" VerticalAlignment="Top" Width="53" Click="loadDemoPic_click"/>
+                    <Button x:Name="editDemo" Content="Edit" HorizontalAlignment="Left" Margin="166,320,0,0" VerticalAlignment="Top" Width="75" Click="editDemo_Click"/>
+                    <Button x:Name="loadDemoPic" Content="Upload" HorizontalAlignment="Left" Margin="558,275,0,0" VerticalAlignment="Top" Width="53" Click="loadDemoPic_Click"/>
+
+                    <TextBox x:Name="barnNameEdit" Visibility="Hidden" MaxLength="14" HorizontalAlignment="Left" Height="22" Margin="150,104,0,0" TextWrapping="Wrap" Text=" " VerticalAlignment="Top" Width="91" GotKeyboardFocus="entryBox_HighlightText" PreviewMouseLeftButtonUp ="entryBox_HighlightText"/>
+                    <TextBox x:Name="regNameEdit" Visibility="Hidden" MaxLength="14" HorizontalAlignment="Left" Height="23" Margin="150,137,0,0" TextWrapping="Wrap" Text=" " VerticalAlignment="Top" Width="91" GotKeyboardFocus="entryBox_HighlightText" PreviewMouseLeftButtonUp ="entryBox_HighlightText"/>
+                    <TextBox x:Name="regNumEdit" Visibility="Hidden" MaxLength="14" HorizontalAlignment="Left" Height="23" Margin="150,165,0,0" TextWrapping="Wrap" Text=" " VerticalAlignment="Top" Width="91" GotKeyboardFocus="entryBox_HighlightText" PreviewMouseLeftButtonUp ="entryBox_HighlightText"/>
+                    <TextBox x:Name="sexEdit" Visibility="Hidden" MaxLength="14" HorizontalAlignment="Left" Height="23" Margin="150,193,0,0" TextWrapping="Wrap" Text=" " VerticalAlignment="Top" Width="91" GotKeyboardFocus="entryBox_HighlightText" PreviewMouseLeftButtonUp ="entryBox_HighlightText"/>
+                    <TextBox x:Name="foalingDateEdit" Visibility="Hidden" MaxLength="14" HorizontalAlignment="Left" Height="23" Margin="150,221,0,0" TextWrapping="Wrap" Text=" " VerticalAlignment="Top" Width="91" GotKeyboardFocus="entryBox_HighlightText" PreviewMouseLeftButtonUp ="entryBox_HighlightText"/>
+                    <TextBox x:Name="heightEdit" Visibility="Hidden" MaxLength="14" HorizontalAlignment="Left" Height="23" Margin="150,249,0,0" TextWrapping="Wrap" Text=" " VerticalAlignment="Top" Width="91" GotKeyboardFocus="entryBox_HighlightText" PreviewMouseLeftButtonUp ="entryBox_HighlightText"/>
+                    <TextBox x:Name="colourEdit" Visibility="Hidden" MaxLength="14" HorizontalAlignment="Left" Height="22" Margin="322,104,0,0" TextWrapping="Wrap" Text=" " VerticalAlignment="Top" Width="99" GotKeyboardFocus="entryBox_HighlightText" PreviewMouseLeftButtonUp ="entryBox_HighlightText"/>
+                    <TextBox x:Name="markingsEdit" Visibility="Hidden" MaxLength="14" HorizontalAlignment="Left" Height="22" Margin="322,138,0,0" TextWrapping="Wrap" Text=" " VerticalAlignment="Top" Width="99" GotKeyboardFocus="entryBox_HighlightText" PreviewMouseLeftButtonUp ="entryBox_HighlightText"/>
+                    <TextBox x:Name="brandEdit" Visibility="Hidden" MaxLength="14" HorizontalAlignment="Left" Height="22" Margin="322,166,0,0" TextWrapping="Wrap" Text=" " VerticalAlignment="Top" Width="99" GotKeyboardFocus="entryBox_HighlightText" PreviewMouseLeftButtonUp ="entryBox_HighlightText"/>
+                    <TextBox x:Name="miscOneEdit" Visibility="Hidden" MaxLength="14" HorizontalAlignment="Left" Height="22" Margin="322,194,0,0" TextWrapping="Wrap" Text=" " VerticalAlignment="Top" Width="99" GotKeyboardFocus="entryBox_HighlightText" PreviewMouseLeftButtonUp ="entryBox_HighlightText"/>
+                    <TextBox x:Name="miscTwoEdit" Visibility="Hidden" MaxLength="14" HorizontalAlignment="Left" Height="22" Margin="322,221,0,0" TextWrapping="Wrap" Text=" " VerticalAlignment="Top" Width="99" GotKeyboardFocus="entryBox_HighlightText" PreviewMouseLeftButtonUp ="entryBox_HighlightText"/>
+                    <TextBox x:Name="miscThreeEdit" Visibility="Hidden" MaxLength="14" HorizontalAlignment="Left" Height="22" Margin="322,250,0,0" TextWrapping="Wrap" Text=" " VerticalAlignment="Top" Width="99" GotKeyboardFocus="entryBox_HighlightText" PreviewMouseLeftButtonUp ="entryBox_HighlightText"/>
+
+
                 </Grid>
             </TabItem>
             <TabItem Header="Vet Notes">
-                <Grid Background="#FFFACD"/>
+                <Grid Background="#FFFACD">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="64*"/>
+                        <ColumnDefinition Width="143*"/>
+                        <ColumnDefinition Width="573*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label x:Name="pClinic" Content="Primary Clinic:" HorizontalAlignment="Left" Margin="30,23,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                    <Label x:Name="pClinicEntry" Content="Primary Clinic Entry" HorizontalAlignment="Left" Margin="56,23,0,0" VerticalAlignment="Top" Grid.Column="1" Grid.ColumnSpan="2"/>
+                    <Label x:Name="pClinicPhone" Content="Clinic Phone:" HorizontalAlignment="Left" Margin="30,54,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                    <Label x:Name="pClinicPhoneEntry" Content="Clinic Phone Entry" HorizontalAlignment="Left" Margin="56,54,0,0" VerticalAlignment="Top" Grid.Column="1" Grid.ColumnSpan="2"/>
+                    <Label x:Name="pVetName" Content="Primary Vet:" Grid.Column="2" HorizontalAlignment="Left" Margin="43,23,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="sVetName" Content="Secondary Vet:" Grid.Column="2" HorizontalAlignment="Left" Margin="256,23,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="pVetPhone" Content="Primary Vet Phone:" Grid.Column="2" HorizontalAlignment="Left" Margin="43,54,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="sVetPhone" Content="Secondary Vet Phone:" Grid.Column="2" HorizontalAlignment="Left" Margin="256,54,0,0" VerticalAlignment="Top"/>
+                    <ComboBox x:Name="selectDateVet" HorizontalAlignment="Left" Margin="30,121,0,0" VerticalAlignment="Top" Width="109" Grid.ColumnSpan="2" SelectionChanged="selectDateVet_SelectionChanged"/>
+                    <Label x:Name="selectDateVetLabel" Content="Select Date:" HorizontalAlignment="Left" Margin="30,95,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                    <Button x:Name="createNewVetEntryButton" Content="New Entry" HorizontalAlignment="Left" Margin="30,209,0,0" VerticalAlignment="Top" Width="109" Height="22" Grid.ColumnSpan="2" Click="createNewVetEntryButton_Click"/>
+                    <Label x:Name="orLabel" Content="or" Grid.Column="1" HorizontalAlignment="Left" Margin="0,157,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="newEntryLabelVet" Content="Create a new entry" HorizontalAlignment="Left" Margin="30,183,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                    <TextBox x:Name="entryBoxVet" Grid.Column="1" HorizontalAlignment="Left" Height="285" Margin="113,120,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="593" Grid.ColumnSpan="2"/>
+                    <Button x:Name="saveEntryBoxVet" Content="Save" HorizontalAlignment="Left" Margin="51,385,0,0" VerticalAlignment="Top" Width="75" Grid.ColumnSpan="2" Click="saveEntryBoxVet_Click"/>
+                    <Label x:Name="pVetNameEntry" Content="Primary Vet Name" Grid.Column="2" HorizontalAlignment="Left" Margin="116,23,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="pVetNumEntry" Content="Primary Vet Num" Grid.Column="2" HorizontalAlignment="Left" Margin="150,54,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="sVetNumEntry" Content="Secondary Vet Num" Grid.Column="2" HorizontalAlignment="Left" Margin="381,54,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="sVetNameEntry" Content="Secondary Vet Name" Grid.Column="2" HorizontalAlignment="Left" Margin="344,23,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="dateLabel" Content="Date" Grid.Column="2" HorizontalAlignment="Left" Margin="24,89,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="descriptionLabel" Content="Description" Grid.Column="2" HorizontalAlignment="Left" Margin="91,89,0,0" VerticalAlignment="Top"/>
+                    <Button x:Name="editSaveVetDemo" Content="Edit" Grid.Column="2" HorizontalAlignment="Left" Margin="501,26,0,0" VerticalAlignment="Top" Width="42" Click="editSaveVetDemo_Click"/>
+                    <TextBox x:Name="pClinicEdit" Grid.Column="1" HorizontalAlignment="Left" Height="26" Margin="56,20,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="112" Visibility="Hidden" Grid.ColumnSpan="2"/>
+                    <TextBox x:Name="pClinicPhEdit" Grid.Column="1" HorizontalAlignment="Left" Height="26" Margin="56,54,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="112" Visibility="Hidden" Grid.ColumnSpan="2"/>
+                    <TextBox x:Name="pVetPhEdit" Grid.Column="2" HorizontalAlignment="Left" Height="26" Margin="150,54,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="100" Visibility="Hidden"/>
+                    <TextBox x:Name="pVetNameEdit" Grid.Column="2" HorizontalAlignment="Left" Height="26" Margin="116,23,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="106" Visibility="Hidden"/>
+                    <TextBox x:Name="sVetNameEdit" Grid.Column="2" HorizontalAlignment="Left" Height="26" Margin="344,23,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120" Visibility="Hidden"/>
+                    <TextBox x:Name="sVetPhEdit" Grid.Column="2" HorizontalAlignment="Left" Height="26" Margin="381,54,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="115" Visibility="Hidden"/>
+                    <TextBox x:Name="vetEnterDateNewBox" HorizontalAlignment="Left" Height="23" Margin="30,262,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="109" Grid.ColumnSpan="2" Visibility="Hidden"/>
+                    <TextBox x:Name="vetEnterTitleNewBox" HorizontalAlignment="Left" Height="23" Margin="30,312,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="109" Grid.ColumnSpan="2" Visibility="Hidden"/>
+                    <Label x:Name="vetEnterDateNew" Content="Enter Date(xx-xx-xx)" HorizontalAlignment="Left" Margin="30,236,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Visibility="Hidden"/>
+                    <Label x:Name="vetEnterTitleNew" Content="Enter Title" HorizontalAlignment="Left" Margin="52,290,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Visibility="Hidden"/>
+                </Grid>
             </TabItem>
             <TabItem Header="Farrier Notes">
-                <Grid Background="#FFFACD"/>
+                <Grid Background="#FFFACD">
+                    <Label x:Name="pFarrierName" Content="Primary Farrier Name:" HorizontalAlignment="Left" Margin="32,24,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="pFarrierNum" Content="Primary Farrier Num:" HorizontalAlignment="Left" Margin="32,50,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="sFarrierName" Content="Secondary Farrier Name:" HorizontalAlignment="Left" Margin="333,24,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="sFArrierNum" Content="Secondary Farrier Num:" HorizontalAlignment="Left" Margin="333,50,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="pFarrierNameEntry" HorizontalAlignment="Left" Margin="161,24,0,0" VerticalAlignment="Top">
+                        <TextBox x:Name="pFarrierNameEdit" Height="23" TextWrapping="Wrap" Text="TextBox" Width="120"/>
+                    </Label>
+                    <Label x:Name="pFarrierNumEntry" HorizontalAlignment="Left" Margin="161,50,0,0" VerticalAlignment="Top">
+                        <TextBox x:Name="pFarrierNumEdit" Height="23" TextWrapping="Wrap" Text="TextBox" Width="120"/>
+                    </Label>
+                    <Label x:Name="sFarrierNameEntry" HorizontalAlignment="Left" Margin="477,24,0,0" VerticalAlignment="Top">
+                        <TextBox x:Name="sFarrierNameEdit" Height="23" TextWrapping="Wrap" Text="TextBox" Width="120"/>
+                    </Label>
+                    <Label x:Name="sFarrierNumEntry" HorizontalAlignment="Left" Margin="477,50,0,0" VerticalAlignment="Top">
+                        <TextBox x:Name="sFarrierNumEdit" Height="23" TextWrapping="Wrap" Text="TextBox" Width="120"/>
+                    </Label>
+                    <ScrollViewer Background="AntiqueWhite" HorizontalAlignment="Left" Height="210" Margin="32,121,0,0" VerticalAlignment="Top" Width="100"/>
+                    <Label x:Name="scrollviewerHeader" Content="Appointments" HorizontalAlignment="Left" Margin="32,90,0,0" VerticalAlignment="Top"/>
+                    <TextBox x:Name="entryEditBox" HorizontalAlignment="Left" Height="210" Margin="216,121,0,0" TextWrapping="Wrap" Text="Appointment data" VerticalAlignment="Top" Width="448"/>
+                    <Button x:Name="addNewDateEntry" Content="Add New" HorizontalAlignment="Left" Margin="42,347,0,0" VerticalAlignment="Top" Width="75"/>
+                    <Button x:Name="saveEntryEditBox" Content="Save" HorizontalAlignment="Left" Margin="669,311,0,0" VerticalAlignment="Top" Width="75"/>
+                    <Button x:Name="editSaveFarrierDemos" Content="Edit" HorizontalAlignment="Left" Margin="664,41,0,0" VerticalAlignment="Top" Width="75" Click="editSaveFarrierDemos_Click"/>
+                </Grid>
             </TabItem>
             <TabItem Header="Vax/Deworming">
                 <Grid Background="#FFFACD"/>
@@ -58,9 +134,56 @@
                 <Image x:Name="image" Source="C:\Users\kimbe\Documents\Visual Studio 2015\Projects\Intro App\LogBook\LogBook\Properties\placeholder.jpg" RenderTransformOrigin="0.075,0.525" Margin="0,0,649,0" Height="58"/>
             </StackPanel>
         </Border>
-        <Label x:Name="label" Content="Profile Name" Margin="284,10,354,458" FontSize="30" HorizontalAlignment="Center"/>
+        <Label x:Name="headProfileLabel" Content="Profile Name" Margin="212,10,271,458" FontSize="30" HorizontalAlignment="Center" Width="337"/>
         <Button x:Name="createNew" Content="Create" HorizontalAlignment="Left" Margin="718,32,0,0" VerticalAlignment="Top" Width="58" Click="createNew_Click"/>
-        <Button x:Name="loadExisting" Content="Load" HorizontalAlignment="Left" Margin="644,32,0,0" VerticalAlignment="Top" Width="58"/>
+        <Button x:Name="loadExisting" Content="Load" HorizontalAlignment="Left" Margin="644,32,0,0" VerticalAlignment="Top" Width="58" Click="loadExisting_Click"/>
+
+        <Popup x:Name="PopUpWindow" IsOpen="False" StaysOpen="True"
+               Placement="Center" AllowsTransparency="True" RenderTransformOrigin="0.266,0.335">
+            <Border BorderBrush="Bisque" BorderThickness="2">
+                <Grid Background="White" Height="121" Width="267" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="35"/>
+                        <RowDefinition Height="51"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="62"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" MinWidth="56"/>
+                        <ColumnDefinition Width="164"/>
+                        <ColumnDefinition Width="41"/>
+                        <ColumnDefinition Width="Auto" MinWidth="6"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Row="0" Grid.Column="1" x:Name="profileNameWelcome" Content="Enter name of new profile:" HorizontalAlignment="Center" Margin="10,0,34,9" Width="161" Grid.ColumnSpan="2"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" x:Name="ProfileTextBox" FocusManager.FocusedElement="{Binding ElementName=ProfileTextBox}" HorizontalAlignment="Left" Height="34" Margin="27,10,0,0" TextWrapping="Wrap" Text="Name" VerticalAlignment="Top" Width="125" RenderTransformOrigin="0.492,-0.265"/>
+                    <Button x:Name="GoButton" Content="Go" Grid.Column="2" HorizontalAlignment="Left" Margin="4,10,0,0" Grid.Row="1" VerticalAlignment="Top" Width="28" Height="31" Click="GoButton_Click"/>
+                    <Button x:Name="Cancel" Content="Cancel" Grid.Column="1" HorizontalAlignment="Left" Margin="55,10,0,0" Grid.Row="2" VerticalAlignment="Top" Width="75" Click="Cancel_Click" Height="20"/>
+                    <Label x:Name="errorMessage" Content=" " HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="1" VerticalAlignment="Top" Height="37" Width="46"/>
+                </Grid>
+            </Border>
+        </Popup>
+        <Popup x:Name="imagePopUp" IsOpen="False">
+            <Border BorderBrush="Bisque" BorderThickness="2">
+                <Grid Height ="100" Width="150" RenderTransformOrigin="1.56,-2.6" Background="AntiqueWhite">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="16"/>
+                        <RowDefinition Height="17"/>
+                        <RowDefinition Height="Auto" MinHeight="18"/>
+                        <RowDefinition Height="Auto" MinHeight="22"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Label x:Name="imageUploadMessage" Content="Select an image to open:" HorizontalAlignment="Left" Grid.Row="0" Width="141" />
+                    <Button x:Name="imageUploadBrowse" Content="Browse" FontSize="8" HorizontalAlignment="Left" Margin="45,0,0,0" Grid.Row="1" VerticalAlignment="Top" Width="54" Height="14" RenderTransformOrigin="0.509,-0.143" Click="imageUploadBrowse_Click"/>
+                    <Label x:Name="uploadImagePathName" Content="Image name" FontSize="8" HorizontalAlignment="Center" Margin="10,0,8,0" Grid.Row="2" VerticalAlignment="Top" Width="132" Height="20" Grid.RowSpan="2"/>
+                    <Button x:Name="uploadImageUpload" Content="Upload" FontSize="8" HorizontalAlignment="Left" Margin="45,3,0,0" Grid.Row="3" VerticalAlignment="Top" Width="54" Height="15" Click="uploadImageUpload_Click"/>
+                    <Button x:Name="imageCancel" Content="Cancel" HorizontalAlignment="Left" Margin="45,5,0,0" Grid.Row="4" VerticalAlignment="Top" Width="54" Height="13" FontSize="8" Click="Cancel_Click"/>
+                </Grid>
+            </Border>
+        </Popup>
 
     </Grid>
 </Window>
