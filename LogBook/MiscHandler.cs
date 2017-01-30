@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.Win32;
 using System.Windows.Media;
 using System.IO;
@@ -15,8 +15,19 @@ namespace LogBook
             get { return _uploadedImagePath; }
             set { _uploadedImagePath = value; }
         }
-        private string _dirPathName = @"C:\Users\kimbe\Documents\Visual Studio 2015\Projects\Intro App\LogBook\LogBook\Properties\Profiles";
-        string dirPathName { get { return _dirPathName; } }
+        public static string activeProfile
+        {
+            get { return MainWindow.activeProfile; }
+        }
+        private string dirPathName = MainWindow.dirPathName ;
+
+
+        public void doesNameExist(ref System.Windows.Controls.Label errorMessage)
+        {
+
+            errorMessage.Content = Directory.Exists(dirPathName + @"\" + activeProfile) ? "Error" : "Success";
+
+        }
 
 
         public void uploadNewPhotoDemo(string profileName, ref System.Windows.Controls.Label uploadImageFilePath, ref System.Windows.Controls.Image demoPicture )
@@ -34,14 +45,14 @@ namespace LogBook
             }
         }
 
-        public void uploadImageUpload(string profileName, ref System.Windows.Controls.Label uploadImageFilePath, ref System.Windows.Controls.Image demoPicture)
+        public void uploadImageUpload(ref System.Windows.Controls.Label uploadImageFilePath, ref System.Windows.Controls.Image demoPicture)
         {
             
 
             demoPicture.Source = new ImageSourceConverter().ConvertFromString(uploadedImagePath) as ImageSource;
 
             string fileName = Path.GetFileName(uploadedImagePath);
-            string newFileLocation = @"C:\Users\kimbe\Documents\Visual Studio 2015\Projects\Intro App\LogBook\LogBook\Properties\Profiles" + @"\" + profileName + @"\" + fileName;
+            string newFileLocation = dirPathName + @"\" + fileName;
             try
             {
                 File.Copy(uploadedImagePath, newFileLocation);
@@ -49,7 +60,7 @@ namespace LogBook
             catch { }
 
             List<string[]> updateDefaultPicture = new List<string[]>();
-            var readToFile = new StreamReader(File.OpenRead(dirPathName + @"\" + profileName + @"\" + profileName + "demo.csv"));
+            var readToFile = new StreamReader(File.OpenRead(dirPathName + @"\" + activeProfile + "demo.csv"));
             int count = 0;
             while (!readToFile.EndOfStream)
             {
@@ -65,7 +76,7 @@ namespace LogBook
             {
                 toSaveCsv += csv + ";";
             }
-            File.WriteAllText(dirPathName + @"\" + profileName + @"\" + profileName + "demo.csv", toSaveCsv);
+            File.WriteAllText(dirPathName + @"\" + activeProfile + "demo.csv", toSaveCsv);
 
 
         }
@@ -105,13 +116,13 @@ namespace LogBook
             }
         }
 
-        public void saveDataToFile(List<System.Windows.Controls.TextBox> editBoxControl, string profileName, string page)
+        public void saveDataToFile(List<System.Windows.Controls.TextBox> editBoxControl, string page)
         {
             List<string[]> toSave = new List<string[]>();
             switch (page)
             {
                 case "Demo":
-                    var readToFile = new StreamReader(File.OpenRead(dirPathName + @"\" + profileName + @"\" + profileName + "demo.csv"));
+                    var readToFile = new StreamReader(File.OpenRead(dirPathName + activeProfile + @"\" + activeProfile + "demo.csv"));
                     int count = 0;
                     while (!readToFile.EndOfStream)
                     {
@@ -134,11 +145,11 @@ namespace LogBook
                         toSaveCsv += csv + ";";
                     }
                     toSaveCsv = toSaveCsv.TrimEnd().Substring(0, toSaveCsv.Length - 1);
-                    File.WriteAllText(dirPathName + @"\" + profileName + @"\" + profileName + "demo.csv", toSaveCsv);
+                    File.WriteAllText(dirPathName + @"\" + activeProfile + "demo.csv", toSaveCsv);
 
                     break;
                 case "vet":
-                    var readToFileV = new StreamReader(File.OpenRead(dirPathName + @"\" + profileName + @"\" + profileName + "vet.csv"));
+                    var readToFileV = new StreamReader(File.OpenRead(dirPathName + @"\" + activeProfile + "vet.csv"));
                     int countV = 0;
                     while (!readToFileV.EndOfStream)
                     {
@@ -165,7 +176,7 @@ namespace LogBook
                         toSaveCsvV = toSaveCsvV.Remove(toSaveCsvV.Length - 1);
                         toSaveCsvV += Environment.NewLine;
                     }
-                    File.WriteAllText(dirPathName + @"\" + profileName + @"\" + profileName + "vet.csv", toSaveCsvV);
+                    File.WriteAllText(dirPathName + @"\" + activeProfile + "vet.csv", toSaveCsvV);
                     break;
                 case "Farrier":
                     break;
