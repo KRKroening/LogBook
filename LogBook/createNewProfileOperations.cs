@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows;
 using System.IO;
 using System.Collections.Generic;
@@ -10,18 +10,19 @@ namespace LogBook
 {
     class createNewProfileOperations
     {
-        private string _dirPathName = @"C:\Users\kimbe\Documents\Visual Studio 2015\Projects\Intro App\LogBook\LogBook\Properties\Profiles";
-        string dirPathName { get { return _dirPathName; } }
-
-        public void doesNameExist(string profileName, ref System.Windows.Controls.Label errorMessage)
+       
+        public static string activeProfile
         {
-
-            errorMessage.Content = Directory.Exists(dirPathName + @"\" + profileName) ? "Error" : "Success";
+            get { return MainWindow.activeProfile; }
+        }
+        public static string dirPathName
+        {
+            get { return MainWindow.dirPathName; }
         }
 
-        public void createProfile(string profileNameText)
+        public void createProfile()
         {
-            Directory.CreateDirectory(dirPathName + @"\" + profileNameText);
+            Directory.CreateDirectory(dirPathName + activeProfile);
             string[] topicList = new string[5] { "demo", "vet", "farrier", "vax", "training" };
 
             foreach (string item in topicList)
@@ -52,7 +53,7 @@ namespace LogBook
                     multiplyer = "Img" + string.Concat(Enumerable.Repeat(";_", multi));
                 else
                     multiplyer += string.Concat(Enumerable.Repeat(";_", multi));
-                File.WriteAllText(dirPathName + @"\" + profileNameText + @"\" + profileNameText + item + ".csv", multiplyer + Environment.NewLine);
+                File.WriteAllText(dirPathName + activeProfile + @"\" + activeProfile + item + ".csv", multiplyer + Environment.NewLine);
             }
         }
     }
