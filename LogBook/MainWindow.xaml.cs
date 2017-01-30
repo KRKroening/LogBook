@@ -1,11 +1,15 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
+using System;
 using System.IO;
+using System.Timers;
+using System;
+using System.Windows.Controls;
 
 /*TODO:
 / Save indicator
-/ 
+/ Create file fixed, go through and resolve other conflicts.
 / 
 / 
     */
@@ -28,13 +32,20 @@ namespace LogBook
             get { return _loadOrCreate; }
             set { _loadOrCreate = value; }
         }
-        private static string _activeProfile = "";
+        private static string _activeProfile;
         public static string activeProfile
         {
             get { return _activeProfile; }
             set { _activeProfile = value; }
         }
-         
+
+        private static string _dirPathName = @"Profiles\";
+
+        public static string dirPathName {
+            get { return _dirPathName; }
+        }
+
+
         public MainWindow()
         {
             InitializeComponent();
@@ -65,18 +76,21 @@ namespace LogBook
 
             if (loadOrCreate == "Create")
             {
-                createNewProfileOps.doesNameExist(profileNameText, ref errorMessage);
+                activeProfile = profileNameText;
+                MiscHandler.doesNameExist(ref errorMessage);
 
                 if (errorMessage.Content.ToString() == "Success")
                 {
-                    createNewProfileOps.createProfile(profileNameText);
+                    createNewProfileOps.createProfile();
                     headProfileLabel.Content = activeProfile = profileNameText;
                     PopUpWindow.IsOpen = false;
                 }
+                if (errorMessage.Content.ToString() == "Error")
+                    activeProfile = null;
             }
             else if (loadOrCreate == "Load")
             {
-                loadExistingProfile.doesNameExist(profileNameText, ref errorMessage);
+                MiscHandler.doesNameExist(ref errorMessage);
 
                 if (errorMessage.Content.ToString() == "Success")
                 {
@@ -86,7 +100,10 @@ namespace LogBook
                     loadIntoPages(pagesList);
                 }
             }
+
+            //errorMessage.Content = null;
         }
+
 
         private void loadExisting_Click(object sender, RoutedEventArgs e)
         {
@@ -146,7 +163,7 @@ namespace LogBook
 
         private void uploadImageUpload_Click(object sender, RoutedEventArgs e)
         {
-            MiscHandler.uploadImageUpload(activeProfile, ref uploadImagePathName, ref demoPicture);
+            MiscHandler.uploadImageUpload(ref uploadImagePathName, ref demoPicture);
             imagePopUp.IsOpen = false;
         }
 
@@ -175,7 +192,7 @@ namespace LogBook
             {
                 barnNameEdit, regNameEdit,regNumEdit,sexEdit,foalingDateEdit,heightEdit, colourEdit,markingsEdit,brandEdit
             };
-                MiscHandler.saveDataToFile(editBoxControlUpdated, activeProfile, "Demo");
+                MiscHandler.saveDataToFile(editBoxControlUpdated, "Demo");
 
             }
             
@@ -205,7 +222,7 @@ namespace LogBook
             };
             System.Windows.Controls.Button buttonState = (sender as System.Windows.Controls.Button);
             vetPage.editSaveVetDemo(buttonState,vetDemos, vetDemosDisplay);
-            MiscHandler.saveDataToFile(vetDemos, activeProfile,"vet");
+            MiscHandler.saveDataToFile(vetDemos,"vet");
         }
 
         private void createNewVetEntryButton_Click(object sender, RoutedEventArgs e)
