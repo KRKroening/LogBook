@@ -4,13 +4,13 @@ using System.Windows.Media;
 using System;
 using System.IO;
 using System.Timers;
-using System;
 using System.Windows.Controls;
 
 /*TODO:
-/ Save indicator
-/ Create file fixed, go through and resolve other conflicts.
-/ 
+/ CHANGE FROM .CSV TO SQLITE
+/ -DB connects, tables created.
+/ - Finish fully converting
+/ - Create Model class for selects
 / 
     */
 namespace LogBook
@@ -20,6 +20,7 @@ namespace LogBook
     /// </summary>
     public partial class MainWindow : Window
     {
+        databaseAccess dbAccess = new databaseAccess();
         createNewProfileOperations createNewProfileOps = new createNewProfileOperations();
         loadExistingProfile loadExistingProfile = new loadExistingProfile();
         MiscHandler MiscHandler = new MiscHandler();
@@ -49,6 +50,7 @@ namespace LogBook
         public MainWindow()
         {
             InitializeComponent();
+            dbAccess.doesDbExists();
         }
 
         //Demographics
@@ -58,7 +60,8 @@ namespace LogBook
         {
             PopUpWindow.IsOpen = true;
             loadOrCreate = "Create";
-            
+            profileNameWelcome.Content = "Enter new profile name:";
+
             ProfileTextBox.Focus();
             ProfileTextBox.SelectionStart = 0;
             ProfileTextBox.SelectionLength = ProfileTextBox.Text.Length;
@@ -68,6 +71,7 @@ namespace LogBook
         {
             PopUpWindow.IsOpen = false;
             imagePopUp.IsOpen = false;
+            errorMessage.Content = "";
         }
 
         private void GoButton_Click(object sender, RoutedEventArgs e)
@@ -76,79 +80,106 @@ namespace LogBook
 
             if (loadOrCreate == "Create")
             {
-                activeProfile = profileNameText;
-                MiscHandler.doesNameExist(ref errorMessage);
+                MiscHandler.doesNameExist(ref errorMessage, profileNameText);
 
-                if (errorMessage.Content.ToString() == "Success")
+                if (errorMessage.Content.ToString() == "Does Not Exist")
                 {
-                    createNewProfileOps.createProfile();
+                    createNewProfileOps.createProfile(profileNameText);
                     headProfileLabel.Content = activeProfile = profileNameText;
+
+                    string insertBarnName = "SELECT barnName from Demographics WHERE barnName = '" + activeProfile + "';";
+                    var insertDefaults = dbAccess.ExecuteRead(insertBarnName);
+                    while (insertDefaults.Read())
+                    {
+                        barnNameEntry.Content = insertDefaults["barnName"].ToString();
+                    }
                     PopUpWindow.IsOpen = false;
+                    errorMessage.Content = "";
                 }
-                if (errorMessage.Content.ToString() == "Error")
+                if (errorMessage.Content.ToString() == "Already Exists")
                     activeProfile = null;
+                dbAccess.sql_con.Close();
             }
             else if (loadOrCreate == "Load")
             {
-                MiscHandler.doesNameExist(ref errorMessage);
+                MiscHandler.doesNameExist(ref errorMessage, profileNameText);
 
-                if (errorMessage.Content.ToString() == "Success")
+                if (errorMessage.Content.ToString() == "Already Exists")
                 {
-                    var pagesList = loadExistingProfile.loadToPages(profileNameText);
                     headProfileLabel.Content = activeProfile = profileNameText;
                     PopUpWindow.IsOpen = false;
-                    loadIntoPages(pagesList);
+                    loadIntoPages();
                 }
+                if (errorMessage.Content.ToString() == "Does Not Exist")
+                    activeProfile = null;
             }
-
-            //errorMessage.Content = null;
         }
-
 
         private void loadExisting_Click(object sender, RoutedEventArgs e)
         {
             PopUpWindow.IsOpen = true;
             loadOrCreate = "Load";
+            profileNameWelcome.Content = "Enter existing profile name:";
+
             ProfileTextBox.Focus();
             ProfileTextBox.SelectionStart = 0;
             ProfileTextBox.SelectionLength = ProfileTextBox.Text.Length;
         }
 
-
-
-        private void loadIntoPages(List<string[]> loadIntoPages)
+        private void loadIntoPages()
         {
-            if (loadIntoPages[0][0].Contains("."))
-                demoPicture.Source = new ImageSourceConverter().ConvertFromString(loadIntoPages[0][0]) as ImageSource;
-            barnNameEntry.Content = loadIntoPages[0][1];
-            regNameEntry.Content = loadIntoPages[0][2];
-            regNumEntry.Content = loadIntoPages[0][3];
-            sexEntry.Content = loadIntoPages[0][4];
-            foalingDateEntry.Content = loadIntoPages[0][5];
-            heightEntry.Content = loadIntoPages[0][6];
-            colourEntry.Content = loadIntoPages[0][7];
-            markingsEntry.Content = loadIntoPages[0][8];
-            brandEntry.Content = loadIntoPages[0][9];
-            //miscLabelOneEntry.Content = loadIntoPages[0][10];
-            //miscLabelTwoEntry.Content = loadIntoPages[0][11];
-            //miscLabelThreeEntry.Content = loadIntoPages[0][12];
+            var loadDemos = loadExistingProfile.LoadIntoDemos();
+            var loadVet = loadExistingProfile.LoadIntoVet();
+            var loadVetVisits = loadExistingProfile.vetEntryList();
+            var loadFarrier = loadExistingProfile.LoadIntoFarrier();
+            var loadFarrierVisits = loadExistingProfile.farrierEntryList(); 
+            var loadVax = loadExistingProfile.LoadIntoVax();
+            var loadTraining = loadExistingProfile.LoadIntoTraining();
 
-            List<System.Windows.Controls.Label> vetDemosDisplay = new List<System.Windows.Controls.Label>
+            barnNameEntry.Content = loadDemos[0];
+            regNameEntry.Content = loadDemos[1];
+            regNumEntry.Content = loadDemos[2];
+            sexEntry.Content = loadDemos[3];
+            foalingDateEntry.Content = loadDemos[4];
+            heightEntry.Content = loadDemos[5];
+            colourEntry.Content = loadDemos[6];
+            markingsEntry.Content = loadDemos[7];
+            brandEntry.Content = loadDemos[8];
+            //miscLabelOneEntry.Content = loadDemos[0][10];
+            //miscLabelTwoEntry.Content = loadDemos[0][11];
+            //miscLabelThreeEntry.Content = loadDemos[0][12];
+
+            pClinicEntry.Content = loadVet[0][3];
+            pClinicPhoneEntry.Content = loadVet[0][4];
+            pVetNameEntry.Content = loadVet[0][1];
+            pVetNumEntry.Content = loadVet[0][2];
+            sVetNameEntry.Content = loadVet[1][1];
+            sVetNumEntry.Content = loadVet[1][2];
+
+            foreach(string item in loadVetVisits)
             {
-                pClinicEntry,pClinicPhoneEntry,pVetNameEntry,pVetNumEntry,sVetNameEntry,sVetNumEntry
-            };
-            int count = 0;
-            foreach (System.Windows.Controls.Label item in vetDemosDisplay)
-            {
-                item.Content = loadIntoPages[1][count].ToString();
+                selectDateVet.Items.Add(item);
             }
-            foreach (string[] list in loadIntoPages)
+
+            pFarrierNameEntry.Content = loadFarrier[0][0];
+            pFarrierNumEntry.Content = loadFarrier[0][1];
+            pFarrierNameEntry.Content = loadFarrier[1][0];
+            pFarrierNumEntry.Content = loadFarrier[1][1];
+
+            foreach (string item in loadFarrierVisits)
             {
-                if (list[2].EndsWith("~v"))
-                {
-                    selectDateVet.Items.Add(list[0]);
-                }
+                farrierDateContainer.Items.Add(item);
             }
+
+            //foreach (string item in loadVax)
+            //{
+            //    vaxDateContainer.Items.Add(item);
+            //}
+
+            //foreach (string item in loadTraining)
+            //{
+            //    trainingDateContainer.Items.Add(item);
+            //}
         }
 
         private void loadDemoPic_Click(object sender, RoutedEventArgs e)
@@ -169,11 +200,11 @@ namespace LogBook
 
         private void editDemo_Click(object sender, RoutedEventArgs e)
         {
-            List<System.Windows.Controls.TextBox> editBoxControl = new List<System.Windows.Controls.TextBox>
+            List<TextBox> editBoxControl = new List<TextBox>
             {
                 barnNameEdit, regNameEdit,regNumEdit,sexEdit,foalingDateEdit,heightEdit, colourEdit,markingsEdit,brandEdit
             };
-            List<System.Windows.Controls.Label> toUpdateLabels = new List<System.Windows.Controls.Label>
+            List<Label> toUpdateLabels = new List<Label>
             {
                 barnNameEntry,regNameEntry,regNumEntry, sexEntry,foalingDateEntry,heightEntry,colourEntry,markingsEntry,brandEntry
             };
@@ -188,7 +219,7 @@ namespace LogBook
                 editDemo.Content = "Edit";
                 MiscHandler.changeVisibilityBox(editBoxControl);
                 MiscHandler.saveFromBoxToLabel(editBoxControl, toUpdateLabels);
-                List<System.Windows.Controls.TextBox> editBoxControlUpdated = new List<System.Windows.Controls.TextBox>
+                List<TextBox> editBoxControlUpdated = new List<TextBox>
             {
                 barnNameEdit, regNameEdit,regNumEdit,sexEdit,foalingDateEdit,heightEdit, colourEdit,markingsEdit,brandEdit
             };
@@ -212,15 +243,15 @@ namespace LogBook
         #region
         private void editSaveVetDemo_Click(object sender, RoutedEventArgs e)
         {
-            List<System.Windows.Controls.TextBox> vetDemos = new List<System.Windows.Controls.TextBox>
+            List<TextBox> vetDemos = new List<TextBox>
             {
                 pClinicEdit,pClinicPhEdit,pVetNameEdit,pVetPhEdit,sVetNameEdit,sVetPhEdit
             };
-            List<System.Windows.Controls.Label> vetDemosDisplay = new List<System.Windows.Controls.Label>
+            List<Label> vetDemosDisplay = new List<Label>
             {
                 pClinicEntry,pClinicPhoneEntry,pVetNameEntry,pVetNumEntry,sVetNameEntry,sVetNumEntry
             };
-            System.Windows.Controls.Button buttonState = (sender as System.Windows.Controls.Button);
+            Button buttonState = (sender as Button);
             vetPage.editSaveVetDemo(buttonState,vetDemos, vetDemosDisplay);
             MiscHandler.saveDataToFile(vetDemos,"vet");
         }
@@ -250,7 +281,7 @@ namespace LogBook
 
         }
 
-        private void selectDateVet_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void selectDateVet_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var box = (sender as System.Windows.Controls.ComboBox);
             List<string[]> foundList = vetPage.loadVetEntryDate(box.SelectedValue.ToString());
@@ -262,23 +293,24 @@ namespace LogBook
 
         private void saveEntryBoxVet_Click(object sender, RoutedEventArgs e)
         {
-            
-            vetPage.saveVetEntry(entryBoxVet.Text,dateLabel.Content.ToString());
+            vetSaveNotification.Content = vetPage.saveVetEntry(entryBoxVet.Text,dateLabel.Content.ToString());
+            vetSaveNotification.Foreground = vetSaveNotification.Equals("Save Failed") ? Brushes.Red:Brushes.Green;
         }
 
         #endregion
 
         //Farrier
         #region
-
-
-        #endregion
-
         private void editSaveFarrierDemos_Click(object sender, RoutedEventArgs e)
         {
-            var buttonState = (sender as System.Windows.Controls.Button);
+            var buttonState = (sender as Button);
             if (buttonState.Content.ToString() == "Edit")
             {
+                pFarrierNameEdit.Text = pFarrierNameEntry.Content.ToString();
+                pFarrierNumEdit.Text = pFarrierNumEntry.Content.ToString();
+                sFarrierNameEdit.Text = sFarrierNameEntry.Content.ToString();
+                pFarrierNumEdit.Text = sFarrierNumEntry.Content.ToString();
+
                 buttonState.Content = "Save";
                 pFarrierNameEdit.Visibility = Visibility.Visible;
                 pFarrierNumEdit.Visibility = Visibility.Visible;
@@ -308,5 +340,29 @@ namespace LogBook
                 farrierPage.saveEditFarrierDemos(dataToSaveFarrierDemos);
             }
         }
+
+        private void addNewDateEntry_Click(object sender, RoutedEventArgs e)
+        {
+            Button addEditButton = (sender as Button);
+            if (addEditButton.Content.ToString() == "Add New")
+            {
+                addEditButton.Content = "Save";
+                addNewFarrierDateEntry.Visibility = Visibility.Visible;
+
+            }
+            else if (addEditButton.Content.ToString() == "Save")
+            {
+                addEditButton.Content = "Add New";
+                addNewFarrierDateEntry.Visibility = Visibility.Hidden;
+                farrierPage.addNewFarrierDate(addNewFarrierDateEntry.Text);
+                farrierDateContainer.Items.Add(addNewFarrierDateEntry.Text);
+            }
+        }
+
+        
+
+
+        #endregion
+
     }
 }
