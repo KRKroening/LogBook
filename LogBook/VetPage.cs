@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Windows;
 using System.Collections.Generic;
@@ -10,15 +10,14 @@ namespace LogBook
 {
     class VetPage
     {
-        static string profileName
+        static string activeProfile
         {
             get { return MainWindow.activeProfile;}
         }
         string dirPathName
         {
-            get { return loadExistingProfile.dirPathName;}
+            get { return MainWindow.dirPathName; }
         }
-        
 
         public void editSaveVetDemo(System.Windows.Controls.Button buttonState, List<System.Windows.Controls.TextBox> vetDemosEdits, List<System.Windows.Controls.Label> vetDemosDisplayEdits)
         {
@@ -44,14 +43,13 @@ namespace LogBook
                 {
                     vetDemosDisplayEdits[count].Content = item.Text;
                     count++;
-                }
-                
+                }                
             }
         }
 
         public void saveVetDemosToFile(List<System.Windows.Controls.TextBox> vetDemosEdits)
         {
-            string pathName = ( dirPathName + @"\" + profileName + @"\" + profileName + "vet.csv").ToString();
+            string pathName = ( dirPathName + activeProfile + @"\" + activeProfile + "vet.csv").ToString();
             List<string[]> openedFile = new List<string[]>();
             var openVetStream = new StreamReader(File.OpenRead(pathName));
             int count = 0;
@@ -82,13 +80,13 @@ namespace LogBook
         public void newVetRecordDateEntry(string date,string title)
         {
             string entry = date + ";" + title + ";" + "New Entry" + " ~v";
-            File.AppendAllText(dirPathName + @"\" + profileName + @"\" + profileName + "vet.csv", entry + Environment.NewLine);
+            File.AppendAllText(dirPathName + activeProfile + @"\" + activeProfile + "vet.csv", entry + Environment.NewLine);
         }
 
         public List<string[]> loadVetEntryDate(string date)
         {
             List<string[]> foundList = new List<string[]>();
-            var browser = File.ReadAllLines(dirPathName + @"\" + profileName + @"\" + profileName + "vet.csv");
+            var browser = File.ReadAllLines(dirPathName + activeProfile + @"\" + activeProfile + "vet.csv");
             foreach (string item in browser)
             {
                 if (item.Contains(date))
@@ -101,10 +99,10 @@ namespace LogBook
             return foundList;
         }
 
-        public void saveVetEntry(string editEntry, string date)
+        public string saveVetEntry(string editEntry, string date)
         {
             List<string[]> list = new List<string[]>();
-            var browser = File.ReadAllLines(dirPathName + @"\" + profileName + @"\" + profileName + "vet.csv");
+            var browser = File.ReadAllLines(dirPathName + activeProfile + @"\" + activeProfile + "vet.csv");
             foreach (string item in browser)
             {
                 var lines = item.Split(';');
@@ -123,7 +121,15 @@ namespace LogBook
                 toPrint = toPrint.Remove(toPrint.Length - 1);
                 toPrint += Environment.NewLine;
             }
-            File.WriteAllText(dirPathName + @"\" + profileName + @"\" + profileName + "vet.csv", toPrint);
+            try
+            {
+                File.WriteAllText(dirPathName + activeProfile + @"\" + activeProfile + "vet.csv", toPrint);
+                return "Save Successful";
+            }
+            catch
+            {
+                return "Save Failed";
+            }
         }
     }
 }
