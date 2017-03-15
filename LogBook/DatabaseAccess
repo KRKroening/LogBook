@@ -1,0 +1,179 @@
+using System;
+using System.IO;
+using System.Data.SQLite;
+using System.Configuration;
+using System.Data;
+
+namespace LogBook
+{
+    public class databaseAccess
+    {
+        private string _dbPath = Environment.CurrentDirectory + @"\logDatabase.db";
+        public string dbPath
+        {
+            get { return _dbPath; }
+        }
+        public SQLiteConnection sql_con;
+        public SQLiteCommand sql_cmd;
+        private SQLiteDataAdapter DB;
+        private DataSet DS = new DataSet();
+        private DataTable DT = new DataTable();
+
+
+        public void doesDbExists()
+        {
+            if (!File.Exists(dbPath))//No db
+            {
+                SQLiteConnection.CreateFile(dbPath);
+            }
+            else
+            {
+                SetConnection();
+                createTables();
+            }
+            
+        }
+        private void SetConnection()
+        {
+            sql_con = new SQLiteConnection
+                ("Data Source=logDatabase.db;Version=3;New=False;Compress=True;");
+        }
+
+        public void ExecuteQuery(string txtQuery)
+        {
+            SetConnection();
+            sql_con.Open();
+            sql_cmd = sql_con.CreateCommand();
+            sql_cmd.CommandText = txtQuery;
+            sql_cmd.ExecuteNonQuery();
+            sql_con.Close();
+        }
+        public int ExecuteCheckQuery(string txtQuery)
+        {
+            SetConnection();
+            sql_con.Close();
+            sql_con.Open();
+            sql_cmd = sql_con.CreateCommand();
+            sql_cmd.CommandText = txtQuery;
+            int rows = sql_cmd.ExecuteNonQuery();
+            sql_con.Close();
+
+            return rows;
+        }
+
+        public SQLiteDataReader ExecuteRead(string txtQuery)
+        {
+            SetConnection();
+            sql_con.Open();
+            sql_cmd = sql_con.CreateCommand();
+            sql_cmd.CommandText = txtQuery;
+            var rows = sql_cmd.ExecuteReader();
+            //sql_con.Close();
+
+            return rows;
+        }
+
+        private void createTables()
+        {
+            //string dropCreateDemo = "Drop Table Demographics";
+            //sql_con.Open();
+            //SQLiteCommand drop = new SQLiteCommand(dropCreateDemo, sql_con);
+            //drop.ExecuteNonQuery();
+            //sql_con.Close();
+            string demoCreate = "CREATE TABLE if not exists Demographics(" +
+                                " profileID integer Primary Key AUTOINCREMENT," +
+                                " barnName text UNIQUE," +
+                                " regName text," +
+                                " regNumber integer," +
+                                " sex text CHECK(sex == 'm' OR sex =='g' OR sex =='s')," +
+                                " foalingDate text DEFAULT '01-01-2000'," +
+                                " height integer CHECK(height>1)," +
+                                " colour text," +
+                                " markings text," +
+                                " brand text," +
+                                " primaryVet int," +
+                                " secondaryVet int," +
+                                " primaryFarrier int," +
+                                " secondaryFarrier int" +
+                                " )";
+
+            string vetsCreate = "CREATE TABLE if not exists Vets(" +
+                                " vetID integer Primary Key AUTOINCREMENT," +
+                                " name text not null," +
+                                " primaryPhone int not null," +
+                                " secondaryPhone interger null," +
+                                " clinicName text null," +
+                                " clinicPhone int null" +
+                                " )";
+
+            string vetVisitsCreate = "CREATE TABLE if not exists VetVisits(" +
+                                " vetEntry integer Primary Key AUTOINCREMENT," +
+                                " visitDate text not null," +
+                                " profileID int not null," +
+                                " primaryVet integer not null," +
+                                " visitDescription text null," +
+                                " visitDetails text null" +
+                                " )";
+
+            string farrierCreate = "CREATE TABLE if not exists Farriers(" +
+                                " farrierID integer Primary Key AUTOINCREMENT," +
+                                " name text not null," +
+                                " primaryPhone int not null," +
+                                " secondaryPhone integer null" +
+                                " )";
+
+            string farrierVisitsCreate = "CREATE TABLE if not exists FarrierVisits(" +
+                    " farrierEntry integer Primary Key AUTOINCREMENT," +
+                    " visitDate text not null," +
+                    " profileID int not null," +
+                    " farrierID integer not null," +
+                    " visitDetails text null" +
+                    " )";
+
+            string vaxCreate = "CREATE TABLE if not exists Vax(" +
+                    " vaxEntry integer Primary Key AUTOINCREMENT," +
+                    " date text not null," +
+                    " vaxOrWorm text not null," +
+                    " profileID int not null," +
+                    " product text not null," +
+                    " notes text null" +
+                    " )";
+
+            string trainingCreate = "CREATE TABLE if not exists TrainingVisits(" +
+                   " trainEntry integer Primary Key AUTOINCREMENT," +
+                   " date text not null," +
+                   " profileID int not null," +
+                   " trainer int null," +
+                   " notes text null" +
+                   " )";
+
+            string trainerCreate = "CREATE TABLE if not exists Trainers(" +
+                                " trainerID integer Primary Key AUTOINCREMENT," +
+                                " name text not null," +
+                                " primaryPhone int not null," +
+                                " secondaryPhone integer null," +
+                                " discipline text null" +
+                                " )";
+
+            string pictureCreate = "CREATE TABLE if not exists Pictures(" +
+                                " pictureNumber integer Primary Key AUTOINCREMENT," +
+                                " profileID int not null," +
+                                " fileLoc text not null," +
+                                " defaultPicture int default 0 not null" +
+                                " )";
+
+            string[] tableList = new string[]{
+                demoCreate,vetsCreate,vetVisitsCreate,farrierCreate,farrierVisitsCreate,vaxCreate,trainerCreate,trainingCreate,pictureCreate
+            };
+
+            sql_con.Open();
+            foreach (string item in tableList)
+            {
+                SQLiteCommand create = new SQLiteCommand(item, sql_con);
+                create.ExecuteNonQuery();
+            }
+            sql_con.Close();
+        }
+    }
+       
+}
