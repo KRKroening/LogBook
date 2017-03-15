@@ -10,7 +10,7 @@ namespace LogBook
 {
     class createNewProfileOperations
     {
-       
+        databaseAccess dbAccess = new databaseAccess();
         public static string activeProfile
         {
             get { return MainWindow.activeProfile; }
@@ -20,41 +20,20 @@ namespace LogBook
             get { return MainWindow.dirPathName; }
         }
 
-        public void createProfile()
+        public void createProfile(string profileNameText)
         {
-            Directory.CreateDirectory(dirPathName + activeProfile);
-            string[] topicList = new string[5] { "demo", "vet", "farrier", "vax", "training" };
+            string addProfile = "INSERT INTO Demographics (barnName) VALUES('" + profileNameText + "');";
 
-            foreach (string item in topicList)
+            try
             {
-                int multi = 0;
-                switch (item)
-                {
-                    case "demo":
-                        multi = 9;
-                        break;
-                    case "vet":
-                        multi = 5;
-                        break;
-                    case "farrier":
-                        multi = 4;
-                        break;
-                    case "vax":
-                        multi = 4;
-                        break;
-                    case "training":
-                        multi = 4;
-                        break;
-                    default:
-                        break;
-                }
-                string multiplyer = "_";
-                if (item == "demo")
-                    multiplyer = "Img" + string.Concat(Enumerable.Repeat(";_", multi));
-                else
-                    multiplyer += string.Concat(Enumerable.Repeat(";_", multi));
-                File.WriteAllText(dirPathName + activeProfile + @"\" + activeProfile + item + ".csv", multiplyer + Environment.NewLine);
+                dbAccess.ExecuteQuery(addProfile);
+                Console.WriteLine("profile created.");
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Insert Failed: " + ex.Message);
+            }
+            dbAccess.sql_con.Close();
         }
     }
 }
