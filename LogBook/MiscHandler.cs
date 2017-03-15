@@ -9,6 +9,7 @@ namespace LogBook
 {
     class MiscHandler
     {
+        databaseAccess dbAccess = new databaseAccess();
         private string _uploadedImagePath = "";
         public string uploadedImagePath
         {
@@ -22,11 +23,17 @@ namespace LogBook
         private string dirPathName = MainWindow.dirPathName ;
 
 
-        public void doesNameExist(ref System.Windows.Controls.Label errorMessage)
+        public void doesNameExist(ref System.Windows.Controls.Label errorMessage, string profileNameText)
         {
 
-            errorMessage.Content = Directory.Exists(dirPathName + @"\" + activeProfile) ? "Error" : "Success";
-
+            string checkText = "SELECT * FROM Demographics WHERE barnName = '" + profileNameText + "';" ;
+            if (dbAccess.ExecuteRead(checkText).StepCount >= 1)
+            {
+                errorMessage.Content = "Already Exists";
+            }
+            else
+                errorMessage.Content = "Does Not Exist";
+            dbAccess.sql_con.Close();
         }
 
 
@@ -47,8 +54,6 @@ namespace LogBook
 
         public void uploadImageUpload(ref System.Windows.Controls.Label uploadImageFilePath, ref System.Windows.Controls.Image demoPicture)
         {
-            
-
             demoPicture.Source = new ImageSourceConverter().ConvertFromString(uploadedImagePath) as ImageSource;
 
             string fileName = Path.GetFileName(uploadedImagePath);
@@ -59,26 +64,42 @@ namespace LogBook
             }
             catch { }
 
-            List<string[]> updateDefaultPicture = new List<string[]>();
-            var readToFile = new StreamReader(File.OpenRead(dirPathName + @"\" + activeProfile + "demo.csv"));
-            int count = 0;
-            while (!readToFile.EndOfStream)
-            {
-                var line = readToFile.ReadLine();
-                var lines = line.Split(';');
-                updateDefaultPicture.Add(lines);
-                count++;
-            }
-            readToFile.Close();
-            updateDefaultPicture[0][0] = newFileLocation;
-            string toSaveCsv = "";
-            foreach (string csv in updateDefaultPicture[0])
-            {
-                toSaveCsv += csv + ";";
-            }
-            File.WriteAllText(dirPathName + @"\" + activeProfile + "demo.csv", toSaveCsv);
+            string statment = "UPDATE Pictures" +
+                                " set" +
+                                " default = 0" +
+                                " WHERE profileID = " + loadExistingProfile.profileID + ";";
+            var execute = dbAccess.ExecuteCheckQuery(statment);
 
-
+            statment = "Select * from Pictures where fileLoc = " + uploadedImagePath + ";";
+            if (dbAccess.ExecuteCheckQuery(statment) >= 1)
+            {//Already exists, set to default
+                try
+                {
+                    statment = "UPDATE Pictures" +
+                                " set" +
+                                " default = 1" +
+                                " WHERE fileLoc = " + uploadedImagePath + ";";
+                    dbAccess.ExecuteQuery(statment);
+                }
+                catch (Exception ex)
+                {
+                    Console.Write(ex.Message);
+                }
+            }
+            else
+            {
+                try
+                {
+                    statment = "INSERT INTO Pictures (profileID,fileLoc,defaultPicture)" +
+                                " VALUES(" + loadExistingProfile.profileID + "," + uploadedImagePath + "," + fileName + ");";
+                    dbAccess.ExecuteQuery(statment);
+                }
+                catch(Exception ex)
+                {
+                    Console.Write(ex.Message);
+                }
+            }
+            dbAccess.sql_con.Close();
         }
 
         public void changeVisibilityBox(List<System.Windows.Controls.TextBox> editBoxControl)
@@ -111,72 +132,63 @@ namespace LogBook
             int itemCount = 0;
             foreach (System.Windows.Controls.Label box in toEditDemoLabels)
             {
-                box.Content = editBoxControl[itemCount].Text.ToString();
-                itemCount++;
+                if(editBoxControl[itemCount] == null)
+                {
+                    box.Content = null;
+                    itemCount++;
+                } else
+                {
+                    box.Content = editBoxControl[itemCount].Text.ToString();
+                    itemCount++;
+                }
+                
             }
         }
 
         public void saveDataToFile(List<System.Windows.Controls.TextBox> editBoxControl, string page)
         {
-            List<string[]> toSave = new List<string[]>();
             switch (page)
             {
                 case "Demo":
-                    var readToFile = new StreamReader(File.OpenRead(dirPathName + activeProfile + @"\" + activeProfile + "demo.csv"));
-                    int count = 0;
-                    while (!readToFile.EndOfStream)
+                    string updateDemos = "UPDATE Demographics SET " +
+                                        "barnName = '" + editBoxControl[0].Text +
+                                        "', RegName = '" + editBoxControl[1].Text +
+                                        "', regNumber = " + editBoxControl[2].Text +
+                                        ", sex = '" + editBoxControl[3].Text +
+                                        "', foalingDate = '" + editBoxControl[4].Text +
+                                        "', height = " + editBoxControl[5].Text +
+                                        ", colour = '" + editBoxControl[6].Text +
+                                        "', markings = '" + editBoxControl[7].Text +
+                                        "', brand = '" + editBoxControl[8].Text +
+                                        "';";
+                    try
                     {
-                        var line = readToFile.ReadLine();
-                        var lines = line.Split(';');
-                        toSave.Add(lines);
-                        count++;
+                        var query = dbAccess.ExecuteCheckQuery(updateDemos);
                     }
-                    readToFile.Close();
-
-                    int counter = 1;
-                    foreach (System.Windows.Controls.TextBox boxes in editBoxControl)
+                    catch(Exception ex)
                     {
-                        toSave[0][counter] = boxes.Text.ToString();
-                        counter++;
+                        Console.WriteLine("Update Error: " + ex.Message);
                     }
-                    string toSaveCsv = "";
-                    foreach (string csv in toSave[0])
-                    {
-                        toSaveCsv += csv + ";";
-                    }
-                    toSaveCsv = toSaveCsv.TrimEnd().Substring(0, toSaveCsv.Length - 1);
-                    File.WriteAllText(dirPathName + @"\" + activeProfile + "demo.csv", toSaveCsv);
-
                     break;
                 case "vet":
-                    var readToFileV = new StreamReader(File.OpenRead(dirPathName + @"\" + activeProfile + "vet.csv"));
-                    int countV = 0;
-                    while (!readToFileV.EndOfStream)
-                    {
-                        var line = readToFileV.ReadLine();
-                        var lines = line.Split(';');
-                        toSave.Add(lines);
-                        countV++;
-                    }
-                    readToFileV.Close();
+                    string updateVet = "INSERT OR IGNORE INTO Vets(name, primaryPhone,secondaryPhone, clinicName, clinicPhone)" +
+                                        "VALUES('Karen', 34)" +
+                                        " UPDATE my_table SET" +
+                                        " name = " + editBoxControl[2] +
+                                        ", primaryPhone = " + editBoxControl[3] +
+                                        ", secondaryPhone = " + editBoxControl[4] +
+                                        ", clinicName = " + editBoxControl[0] +
+                                        ", clinicPhone = " + editBoxControl[1] +
+                                        ";";
 
-                    int counterV = 0;
-                    foreach (System.Windows.Controls.TextBox boxes in editBoxControl)
+                    try
                     {
-                        toSave[0][counterV] = boxes.Text.ToString();
-                        counterV++;
+                        var query = dbAccess.ExecuteCheckQuery(updateVet);
                     }
-                    string toSaveCsvV = "";
-                    foreach (string[] csv in toSave)
+                    catch (Exception ex)
                     {
-                        foreach (string subcsv in csv)
-                        {
-                            toSaveCsvV += subcsv + ";";
-                        }
-                        toSaveCsvV = toSaveCsvV.Remove(toSaveCsvV.Length - 1);
-                        toSaveCsvV += Environment.NewLine;
+                        Console.WriteLine("Update Error: " + ex.Message);
                     }
-                    File.WriteAllText(dirPathName + @"\" + activeProfile + "vet.csv", toSaveCsvV);
                     break;
                 case "Farrier":
                     break;
